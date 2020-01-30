@@ -37,7 +37,7 @@ from utils.trade import (
     query_item,
 )
 from utils.web import open_trade_site, wiki_lookup
-from gui.UI import PriceInfo, NoResult
+from gui.UI import PriceInfo, NoResult, SelectSearchingMods
 from gui.guiComponent import check_timeout_gui, destroy_gui
 
 DEBUG = False
@@ -45,6 +45,8 @@ DEBUG = False
 if USE_GUI:
     priceInfo = PriceInfo()
     noResult = NoResult()
+    selectSearch = SelectSearchingMods()
+
 
 def parse_item_info(text: str) -> Dict:
     """
@@ -859,6 +861,7 @@ def price_item(text):
                 trade_info = query_exchange(info["name"])
 
             else:
+
                 # Do intensive search.
                 if info["itype"] != info["name"] and info["itype"] != None:
                     print(f"[*] Found {info['rarity']} item in clipboard: {info['name']} {info['itype']}", flush=True)
@@ -875,6 +878,14 @@ def price_item(text):
                         extra_strings += f"Quality: {info['quality']}+"
 
                     print(f"[*] Found {info['rarity']} item in clipboard: {info['name']} {extra_strings}")
+                
+                if USE_GUI:
+                    selectSearch.add_info(info)
+                    selectSearch.create_at_cursor()
+                    selectSearch.run()
+                    if selectSearch.searched:
+                        info = selectSearch.info
+                        selectSearch.searched = False
 
                 json = build_json_official(
                     **{
@@ -896,7 +907,6 @@ def price_item(text):
                         )
                     },
                 )
-
             if json != None:
                 trade_info = search_item(json, LEAGUE)
 

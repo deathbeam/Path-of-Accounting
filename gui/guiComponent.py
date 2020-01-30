@@ -61,6 +61,14 @@ class GuiComponent:
         self.have_timeout = False
         self.hidden = True
         components.append(self)
+
+    def stop(self):
+        self.frame.quit()
+        self.close()
+
+    def run(self):
+        self.frame.mainloop()
+
     def should_close(self):
         if self.is_closed():
             return
@@ -71,6 +79,7 @@ class GuiComponent:
             elapsed = 0
             self.close()
             windowRefocus("path of exile")
+
     def should_hide(self):
         if not self.have_timeout:
             return
@@ -87,6 +96,7 @@ class GuiComponent:
         frame.withdraw()
         self.frame = frame
         self.hidden = True
+
     def is_closed(self):
         if self.closed:
             return True
@@ -99,12 +109,15 @@ class GuiComponent:
         self.frame.destroy()
         self.frame.update()
         self.frame = None
+
     def reset(self):
         for child in self.frame.winfo_children():
             child.destroy()
+
     def add_components(self):
         pass
-    def create(self,x_cord, y_cord):
+
+    def create(self, x_cord, y_cord):
         if not self.closed:
             return
         self.closed = False
@@ -170,6 +183,38 @@ class GuiComponent:
         self.frame.geometry(f"+{m_x}+{m_y}")
         self.frame.update()
         self.opened = time.time()
+
+class GuiRunningComponent(GuiComponent):
+    def stop(self):
+        self.frame.quit()
+        self.close()
+
+    def run(self):
+        self.frame.mainloop()
+    
+    def prepare_window(self):
+        tk = Tk().withdraw()
+        frame = Toplevel()
+        frame.option_add("*Font", "courier 12")
+        frame.title(" ")
+        self.frame = frame
+
+
+    def add_components(self):
+        pass
+    
+    def create(self, x_cord, y_cord):
+        if not self.closed:
+            return
+        self.closed = False
+        self.prepare_window()
+        self.add_components()
+        windowToFront(self.frame)
+        self.frame.geometry(f"+{x_cord}+{y_cord}")
+        self.frame.update()
+        self.opened = time.time()
+
+
 
 def check_timeout_gui():
     for x in components:

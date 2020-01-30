@@ -120,3 +120,47 @@ class NoResult(GuiComponent):
         displayText = "Could not find enough data to confidently price this item."
         annotation = Label(self.frame, text=displayText, bg="#0d0d0d", fg="#e6b800")
         annotation.grid(column=0, row=2)
+
+
+class SelectSearchingMods(GuiRunningComponent):
+    def __init__(self):
+        super().__init__()
+        self.info = {}
+        self.selected = []
+        self.searched = False
+    def add_info(self, info):
+        self.info = info
+        self.selected = {}
+        #print(info)
+    def search(self):
+        print("You have selected:")
+        values = []
+        for key, value in self.selected.items():
+            if value.get():
+                values.append(key)
+                print(key)
+        print("                                            ")
+        self.info["stats"] = values
+        self.stop()
+    def add_components(self):
+
+        # Setting up Master Frame, only currently used for background color due to grid format.
+        masterFrame = Frame(self.frame, bg="#1f1f1f")
+        masterFrame.place(relwidth=1, relheight=1)
+
+        headerLabel = Label(self.frame, text="Select Mods to include in search", bg="#0d0d0d", fg="#e6b800")
+        headerLabel.grid(column=0, row=1, padx=5)
+
+        j = 2
+        for key, value in self.info.items():
+            #print(key,value)
+            if key == "stats":
+                for v in value:
+                    if v == "--------":
+                        continue
+                    self.selected[v] = IntVar()
+                    Checkbutton(self.frame, text=v, variable=self.selected[v], bg="#1f1f1f", fg="#e6b800").grid(row=j, sticky=W)
+                    j = j+1
+        
+        Button(self.frame, text='Search', command=self.search).grid(row=j, sticky=S)
+    
