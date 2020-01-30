@@ -71,6 +71,7 @@ class GuiComponent:
         self.frame.destroy()
         self.frame.update()
         self.frame = None
+        windowRefocus("path of exile")
     def add_components(self):
         pass
     def show(self,x_cord, y_cord):

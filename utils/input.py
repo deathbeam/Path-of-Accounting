@@ -27,6 +27,7 @@ if not is_keyboard_module_available:
 def get_clipboard():
     return pyperclip.paste()
 
+
 class HotkeyWatcher(Thread):
     """
     Watches for changes in hotkey queue and calls callbacks
