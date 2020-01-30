@@ -984,11 +984,11 @@ def price_item(text):
                         price_curr = price["currency"]
                         price = f"{price_val} x {price_curr}"
                         print(f"[$] Price: {Fore.YELLOW}{price} \n\n")
-                        ctime = datetime.now(timezone.utc) - datetime.replace(
+                        time = datetime.now(timezone.utc) - datetime.replace(
                             datetime.strptime(trade_info[0]["listing"]["indexed"], "%Y-%m-%dT%H:%M:%SZ"),
                             tzinfo=timezone.utc,
                         )
-                        ctime = [[time.days, time.seconds]]
+                        time = [[time.days, time.seconds]]
                         price_vals = [[str(price_val) + price_curr]]
 
                         if USE_GUI:
