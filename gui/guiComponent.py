@@ -89,7 +89,7 @@ class GuiComponent:
         self.add_components()
         windowToFront(self.frame)
         
-
+        self.frame.update()
         m_x = self.frame.winfo_pointerx()
         m_y = self.frame.winfo_pointery()
         def get_monitor_from_coord(x, y):
