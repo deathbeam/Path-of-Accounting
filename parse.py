@@ -38,6 +38,7 @@ from utils.trade import (
 )
 from utils.web import open_trade_site, wiki_lookup
 from gui.UI import priceInfo, noResult
+from gui.guiComponent import check_timeout_gui
 
 DEBUG = False
 
@@ -1180,7 +1181,7 @@ if __name__ == "__main__":
         try:
             while True:
                 hotkey_handler_mainthread()
-                priceInfo.should_close()
+                check_timeout_gui()
         except KeyboardInterrupt:
                 print(f"[!] Exiting, user requested termination.")
 
