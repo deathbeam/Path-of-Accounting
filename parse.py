@@ -38,7 +38,7 @@ from utils.trade import (
 )
 from utils.web import open_trade_site, wiki_lookup
 from gui.UI import priceInfo, noResult, selectSearch
-from gui.guiComponent import check_timeout_gui, destroy_gui
+from gui.guiComponent import check_timeout_gui, destroy_gui, init_ui
 import webbrowser
 
 DEBUG = False
@@ -1197,10 +1197,13 @@ if __name__ == "__main__":
         print(f"All values will be from the {Fore.MAGENTA}{LEAGUE} league")
         keyboard = Keyboard()
         watch_keyboard(keyboard, USE_HOTKEYS)
+        if USE_GUI:
+            init_ui()
         try:
             while True:
                 hotkey_handler_mainthread()
-                check_timeout_gui()
+                if USE_GUI:
+                    check_timeout_gui()
         except KeyboardInterrupt:
             pass
 

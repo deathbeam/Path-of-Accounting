@@ -50,7 +50,11 @@ def windowRefocus(name):
                 win32gui.SetForegroundWindow(i[0])
                 break
 
-tk = Tk().withdraw()
+tk = None
+def init_ui():
+    global tk
+    if not tk:
+        tk = Tk().withdraw()
 components = []
 
 class GuiComponent:
