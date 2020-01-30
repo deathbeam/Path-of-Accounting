@@ -905,9 +905,10 @@ def price_item(text):
                     },
                 )
                 if USE_GUI:
-                    if selectSearch.open_trade:
+                    if selectSearch.openTrade:
                         j = query_item(json, LEAGUE)
                         selectSearch.openTrade = False
+                        selectSearch.searched = False
                         url = f"https://www.pathofexile.com/trade/search/{LEAGUE}/" + j["id"]
                         webbrowser.open(url)
             if json != None:

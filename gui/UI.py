@@ -152,6 +152,7 @@ class SelectSearchingMods(GuiRunningComponent):
                 print(key)
         print("                                            ")
         self.info["stats"] = values
+        self.searched = True
         self.openTrade = True
         self.stop()
     def add_components(self):
