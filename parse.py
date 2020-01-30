@@ -37,9 +37,11 @@ from utils.trade import (
     query_item,
 )
 from utils.web import open_trade_site, wiki_lookup
+from gui.priceInfo import PriceInfo
 
 DEBUG = False
 
+priceInfo = PriceInfo()
 
 def parse_item_info(text: str) -> Dict:
     """
@@ -971,8 +973,9 @@ def price_item(text):
                             average,
                             round(float(price[-1]), 2),
                         ]
-
-                        gui.show_price(price, list(prices), avg_times)
+                        priceInfo.close()
+                        priceInfo.add_price_info(price, list(prices), avg_times)
+                        priceInfo.show_at_cursor()
 
                 else:
                     price = trade_info[0]["listing"]["price"]
@@ -981,15 +984,17 @@ def price_item(text):
                         price_curr = price["currency"]
                         price = f"{price_val} x {price_curr}"
                         print(f"[$] Price: {Fore.YELLOW}{price} \n\n")
-                        time = datetime.now(timezone.utc) - datetime.replace(
+                        ctime = datetime.now(timezone.utc) - datetime.replace(
                             datetime.strptime(trade_info[0]["listing"]["indexed"], "%Y-%m-%dT%H:%M:%SZ"),
                             tzinfo=timezone.utc,
                         )
-                        time = [[time.days, time.seconds]]
+                        ctime = [[time.days, time.seconds]]
                         price_vals = [[str(price_val) + price_curr]]
 
                         if USE_GUI:
-                            gui.show_price(price, price_vals, time)
+                            priceInfo.close()
+                            priceInfo.add_price_info(price, list(prices), avg_times)
+                            priceInfo.show_at_cursor()
                     else:
                         print(f"[$] Price: {Fore.YELLOW}None \n\n")
 
@@ -1163,13 +1168,10 @@ if __name__ == "__main__":
         print(f"All values will be from the {Fore.MAGENTA}{LEAGUE} league")
         keyboard = Keyboard()
         watch_keyboard(keyboard, USE_HOTKEYS)
-
         try:
-            if USE_GUI:
-                from utils.gui import Gui
-                gui = Gui()
             while True:
-                time.sleep(1) # main thread does nothing exept wait for interrupt now
+                keyboard.run()
+                priceInfo.should_close()
         except KeyboardInterrupt:
                 print(f"[!] Exiting, user requested termination.")
 
