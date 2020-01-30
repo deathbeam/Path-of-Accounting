@@ -37,15 +37,10 @@ from utils.trade import (
     query_item,
 )
 from utils.web import open_trade_site, wiki_lookup
-from gui.UI import PriceInfo, NoResult, SelectSearchingMods
+from gui.UI import priceInfo, noResult, selectSearch
 from gui.guiComponent import check_timeout_gui, destroy_gui
 
 DEBUG = False
-
-if USE_GUI:
-    priceInfo = PriceInfo()
-    noResult = NoResult()
-    selectSearch = SelectSearchingMods()
 
 
 def parse_item_info(text: str) -> Dict:
@@ -988,6 +983,7 @@ def price_item(text):
                             round(float(price[-1]), 2),
                         ]
                         priceInfo.add_price_info(price, list(prices), avg_times, len(trade_info) < MIN_RESULTS)
+                        priceInfo.create_at_cursor()
 
                 else:
                     price = trade_info[0]["listing"]["price"]
@@ -1006,7 +1002,8 @@ def price_item(text):
                         print("[!] Not enough data to confidently price this item.")
                         if USE_GUI:
                             priceInfo.add_price_info(price, price_vals, time, True)
-
+                            priceInfo.create_at_cursor()
+                            
                     else:
                         print(f"[$] Price: {Fore.YELLOW}None \n\n")
                         print("[!] Not enough data to confidently price this item.")

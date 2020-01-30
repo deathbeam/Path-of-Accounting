@@ -50,6 +50,7 @@ def windowRefocus(name):
                 win32gui.SetForegroundWindow(i[0])
                 break
 
+tk = Tk().withdraw()
 components = []
 
 class GuiComponent:
@@ -89,7 +90,6 @@ class GuiComponent:
             self.hide()
     
     def prepare_window(self):
-        tk = Tk().withdraw()
         frame = Toplevel()
         frame.overrideredirect(True)
         frame.option_add("*Font", "courier 12")

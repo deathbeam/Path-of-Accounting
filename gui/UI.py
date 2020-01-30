@@ -15,7 +15,6 @@ class PriceInfo(GuiComponent):
         self.price_vals = price_vals
         self.avg_times = avg_times
         self.not_enough = not_enough
-        self.create_at_cursor()
     
     def add_components(self):
         # Setting up Master Frame, only currently used for background color due to grid format.
@@ -163,4 +162,7 @@ class SelectSearchingMods(GuiRunningComponent):
                     j = j+1
         
         Button(self.frame, text='Search', command=self.search).grid(row=j, sticky=S)
-    
+
+priceInfo = PriceInfo()
+noResult = NoResult()
+selectSearch = SelectSearchingMods()
