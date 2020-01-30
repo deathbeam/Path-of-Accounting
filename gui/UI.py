@@ -132,7 +132,6 @@ class SelectSearchingMods(GuiRunningComponent):
     def add_info(self, info):
         self.info = info
         self.selected = {}
-        print(info)
     def search(self):
         self.searched = True
         print("You have selected:")
@@ -145,11 +144,13 @@ class SelectSearchingMods(GuiRunningComponent):
         self.info["stats"] = values
         self.stop()
     def open_trade(self):
+        print("You have selected:")
         values = []
         for key, value in self.selected.items():
             if value.get():
                 values.append(key)
                 print(key)
+        print("                                            ")
         self.info["stats"] = values
         self.openTrade = True
         self.stop()

@@ -883,7 +883,7 @@ def price_item(text):
                     if selectSearch.searched:
                         info = selectSearch.info
                         selectSearch.searched = False
-                #print(info)
+
                 json = build_json_official(
                     **{
                         k: v
