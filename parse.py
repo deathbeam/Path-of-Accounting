@@ -993,7 +993,7 @@ def price_item(text):
 
                         if USE_GUI:
                             priceInfo.close()
-                            priceInfo.add_price_info(price, list(prices), avg_times)
+                            priceInfo.add_price_info(price, price_vals, time)
                             priceInfo.show_at_cursor()
                     else:
                         print(f"[$] Price: {Fore.YELLOW}None \n\n")
