@@ -43,7 +43,6 @@ from gui.guiComponent import check_timeout_gui, destroy_gui
 DEBUG = False
 
 
-
 def parse_item_info(text: str) -> Dict:
     """
     Parse item info (from clipboard, as obtained by pressing Ctrl+C hovering an item in-game).

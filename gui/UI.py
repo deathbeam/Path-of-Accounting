@@ -121,7 +121,9 @@ class NoResult(GuiComponent):
         annotation = Label(self.frame, text=displayText, bg="#0d0d0d", fg="#e6b800")
         annotation.grid(column=0, row=2)
 
-priceInfo = PriceInfo()
-priceInfo.prepare_window()
-noResult = NoResult()
-noResult.add_components()
+if USE_GUI:
+    priceInfo = PriceInfo()
+    noResult = NoResult()
+    priceInfo.prepare_window()
+    noResult.prepare_window()
+    noResult.add_components()

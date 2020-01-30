@@ -30,6 +30,7 @@ if not is_keyboard_module_available:
 def get_clipboard():
     return pyperclip.paste()
 
+
 class ClipboardWatcher(Thread):
     """
     Watches for changes in clipboard and calls callback.
