@@ -142,8 +142,8 @@ class Keyboard:
 
         if is_keyboard_module_available or is_pyinput_module_available:
             self.hotkey_watcher.start()
-
-        self.clipboard_watcher.start()
+        else:
+            self.clipboard_watcher.start()
 
     def wait(self):
         self.clipboard_watcher.join()

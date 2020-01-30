@@ -70,6 +70,7 @@ class GuiComponent:
         if self.elapsed >= int(TIMEOUT_GUI):
             elapsed = 0
             self.close()
+            windowRefocus("path of exile")
     def should_hide(self):
         if not self.have_timeout:
             return
@@ -172,7 +173,7 @@ class GuiComponent:
 
 def check_timeout_gui():
     for x in components:
-        x.should_hide()
+        x.should_close()
 
 def destroy_gui():
     for x in components:

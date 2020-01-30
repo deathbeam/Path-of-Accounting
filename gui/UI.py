@@ -9,13 +9,13 @@ class PriceInfo(GuiComponent):
         self.avg_times = []
         self.not_enough = False
     def add_price_info(self, price, price_vals, avg_times, not_enough):
+        if not self.is_closed():
+            self.close()
         self.price = price
         self.price_vals = price_vals
         self.avg_times = avg_times
         self.not_enough = not_enough
-        self.reset()
-        self.add_components()
-        self.show_at_cursor()
+        self.create_at_cursor()
     
     def add_components(self):
         # Setting up Master Frame, only currently used for background color due to grid format.
@@ -120,10 +120,3 @@ class NoResult(GuiComponent):
         displayText = "Could not find enough data to confidently price this item."
         annotation = Label(self.frame, text=displayText, bg="#0d0d0d", fg="#e6b800")
         annotation.grid(column=0, row=2)
-
-if USE_GUI:
-    priceInfo = PriceInfo()
-    noResult = NoResult()
-    priceInfo.prepare_window()
-    noResult.prepare_window()
-    noResult.add_components()

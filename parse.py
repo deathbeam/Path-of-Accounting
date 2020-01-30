@@ -37,11 +37,14 @@ from utils.trade import (
     query_item,
 )
 from utils.web import open_trade_site, wiki_lookup
-from gui.UI import priceInfo, noResult
+from gui.UI import PriceInfo, NoResult
 from gui.guiComponent import check_timeout_gui, destroy_gui
 
 DEBUG = False
 
+if USE_GUI:
+    priceInfo = PriceInfo()
+    noResult = NoResult()
 
 def parse_item_info(text: str) -> Dict:
     """
