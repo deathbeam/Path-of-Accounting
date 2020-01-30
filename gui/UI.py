@@ -3,25 +3,21 @@ import time
 class PriceInfo(GuiComponent):
     def __init__(self):
         super().__init__()
+        self.have_timeout = True
         self.price = []
         self.price_vals = []
         self.avg_times = []
-        self.opened = time.time()
-        self.elapsed = 0
-    def add_price_info(self, price, price_vals, avg_times):
+        self.not_enough = False
+    def add_price_info(self, price, price_vals, avg_times, not_enough):
         if not self.is_closed():
             self.close()
         self.opened = time.time()
         self.price = price
         self.price_vals = price_vals
         self.avg_times = avg_times
-    def should_close(self):
-        if self.is_closed():
-            return
-        self.elapsed = time.time() - self.opened
-        if self.elapsed >= 3:
-            elapsed = 0
-            self.close()
+        self.not_enough = not_enough
+        self.create_at_cursor()
+    
     def add_components(self):
         # Setting up Master Frame, only currently used for background color due to grid format.
         masterFrame = Frame(self.frame, bg="#1f1f1f")
@@ -37,6 +33,7 @@ class PriceInfo(GuiComponent):
             column=2, row=1, padx=5
         )
         headerLabel3 = Label(self.frame, text="   ", bg="#0d0d0d", fg="#e6b800").grid(column=1, row=1, sticky="w" + "e")
+
         rows_used = len(self.price_vals)
 
         for row in range(rows_used):
@@ -75,27 +72,55 @@ class PriceInfo(GuiComponent):
                     column=2, row=2 + row, sticky="w", padx=5
                 )
 
-            footerbgLabel = Label(self.frame, bg="#0d0d0d").grid(column=0, row=rows_used + 3, columnspan=3, sticky="w" + "e")
+        footerbgLabel = Label(self.frame, bg="#0d0d0d").grid(column=0, row=rows_used + 3, columnspan=3, sticky="w" + "e")
 
-            minPriceLabel = Label(self.frame, text="Low: " + str(self.price[0]), bg="#0d0d0d", fg="#e6b800")
-            minPriceLabel.grid(column=0, row=rows_used + 3, padx=10)
+        minPriceLabel = Label(self.frame, text="Low: " + str(self.price[0]), bg="#0d0d0d", fg="#e6b800")
+        minPriceLabel.grid(column=0, row=rows_used + 3, padx=10)
 
-            avgPriceLabel = Label(self.frame, text="Avg: " + str(self.price[1]), bg="#0d0d0d", fg="#e6b800")
-            avgPriceLabel.grid(column=1, row=rows_used + 3, padx=10)
+        avgPriceLabel = Label(self.frame, text="Avg: " + str(self.price[1]), bg="#0d0d0d", fg="#e6b800")
+        avgPriceLabel.grid(column=1, row=rows_used + 3, padx=10)
 
-            maxPriceLabel = Label(self.frame, text="High: " + str(self.price[2]), bg="#0d0d0d", fg="#e6b800")
-            maxPriceLabel.grid(column=2, row=rows_used + 3, padx=10)
-"""
-gui = PriceInfo()
-gui.show(0,10)
+        maxPriceLabel = Label(self.frame, text="High: " + str(self.price[2]), bg="#0d0d0d", fg="#e6b800")
+        maxPriceLabel.grid(column=2, row=rows_used + 3, padx=10)
 
-gui2 = GuiComponent()
-gui2.show(0,100)
-time.sleep(5)
-gui.close()
-gui.close()
-time.sleep(3)
-gui2.close()
-while True:
-    time.sleep(1)
-"""
+        extrabgLabel = None
+        extrabgLabel2 = None
+        notEnoughLabel = None
+        manualSearchLabel = None
+
+        if self.not_enough:
+            extrabgLabel = Label(self.frame, bg="#0d0d0d")
+            extrabgLabel.grid(column=0, row=rows_used + 4, columnspan=3, sticky="w" + "e")
+            notEnoughText = "Found limited search results"
+            notEnoughLabel = Label(self.frame, text=notEnoughText, bg="#0d0d0d", fg="#e6b800")
+            notEnoughLabel.grid(column=0, row=rows_used + 4, columnspan=3)
+            extrabgLabel2 = Label(self.frame, bg="#0d0d0d")
+            extrabgLabel2.grid(column=0, row=rows_used + 5, columnspan=3, sticky="w" + "e")
+            manualSearchText = "Use alt+t to search manually"
+            manualSearchLabel = Label(self.frame, text=manualSearchText, bg="#0d0d0d", fg="#e6b800")
+            manualSearchLabel.grid(column=0, row=rows_used + 5, columnspan=3)
+
+class NoResult(GuiComponent):
+    def __init__(self):
+        super().__init__()
+        self.have_timeout = True
+    def add_components(self):
+        """
+        Assemble a simple informative window which tells the user
+        that we were unable to confidently price the current clipboard
+        item.
+        """
+
+        # Setting up Master Frame, only currently used for background color due to grid format.
+        masterFrame = Frame(self.root, bg="#1f1f1f")
+        masterFrame.place(relwidth=1, relheight=1)
+
+        headerLabel = Label(self.root, text="Not Enough Data", bg="#0d0d0d", fg="#e6b800")
+        headerLabel.grid(column=0, row=1, padx=5)
+
+        displayText = "Could not find enough data to confidently price this item."
+        annotation = Label(self.root, text=displayText, bg="#0d0d0d", fg="#e6b800")
+        annotation.grid(column=0, row=2)
+
+priceInfo = PriceInfo()
+noResult = NoResult()

@@ -11,7 +11,7 @@ from colorama import Fore, deinit, init
 # Local imports
 from enums.item_modifier_type import ItemModifierType
 from models.item_modifier import ItemModifier
-from utils.config import LEAGUE, PROJECT_URL, USE_GUI, USE_HOTKEYS
+from utils.config import LEAGUE, MIN_RESULTS, PROJECT_URL, USE_GUI, USE_HOTKEYS
 from utils.currency import (
     CATALYSTS,
     CURRENCY,
@@ -37,11 +37,11 @@ from utils.trade import (
     query_item,
 )
 from utils.web import open_trade_site, wiki_lookup
-from gui.priceInfo import PriceInfo
+from gui.UI import priceInfo, noResult
 
 DEBUG = False
 
-priceInfo = PriceInfo()
+
 
 def parse_item_info(text: str) -> Dict:
     """
@@ -973,10 +973,7 @@ def price_item(text):
                             average,
                             round(float(price[-1]), 2),
                         ]
-                        priceInfo.close()
-                        priceInfo.add_price_info(price, list(prices), avg_times)
-                        priceInfo.show_at_cursor()
-
+                        priceInfo.add_price_info(price, list(prices), avg_times, len(trade_info) < MIN_RESULTS)
                 else:
                     price = trade_info[0]["listing"]["price"]
                     if price != None:
@@ -991,15 +988,19 @@ def price_item(text):
                         time = [[time.days, time.seconds]]
                         price_vals = [[str(price_val) + price_curr]]
 
+                        print("[!] Not enough data to confidently price this item.")
                         if USE_GUI:
-                            priceInfo.close()
-                            priceInfo.add_price_info(price, price_vals, time)
-                            priceInfo.show_at_cursor()
+                            priceInfo.add_price_info(price, price_vals, time, True)
                     else:
                         print(f"[$] Price: {Fore.YELLOW}None \n\n")
-
+                        print("[!] Not enough data to confidently price this item.")
+                        if USE_GUI:
+                            noResult.create_at_cursor()
             elif trade_info is not None:
-                print(f"[!] No results!")
+                print("[!] No results!")
+                print("[!] Not enough data to confidently price this item.")
+                if USE_GUI:
+                    noResult.create_at_cursor()
 
     except InvalidAPIResponseException as e:
         print(f"{Fore.RED}================== LOOKUP FAILED, PLEASE READ INSTRUCTIONS BELOW ==================")

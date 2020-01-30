@@ -1,6 +1,9 @@
 import os
 from tkinter import *
 import screeninfo
+import time
+from utils.config import USE_GUI, TIMEOUT_GUI
+
 # We do not need this on Linux.
 if os.name == "nt":
     import pythoncom
@@ -47,10 +50,26 @@ def windowRefocus(name):
                 win32gui.SetForegroundWindow(i[0])
                 break
 
+components = []
+
 class GuiComponent:
     def __init__(self):
         self.frame = None
         self.closed = True
+        self.opened = time.time()
+        self.elapsed = 0
+        self.have_timeout = False
+        components.append(self)
+    def should_close(self):
+        if self.is_closed():
+            return
+        if not self.have_timeout:
+            return
+        self.elapsed = time.time() - self.opened
+        if self.elapsed >= int(TIMEOUT_GUI):
+            elapsed = 0
+            self.close()
+    
     def prepare_window(self):
         tk = Tk().withdraw()
         frame = Toplevel()
@@ -74,7 +93,9 @@ class GuiComponent:
         windowRefocus("path of exile")
     def add_components(self):
         pass
-    def show(self,x_cord, y_cord):
+    def create(self,x_cord, y_cord):
+        if not self.closed:
+            return
         self.closed = False
         self.prepare_window()
         self.add_components()
@@ -83,10 +104,27 @@ class GuiComponent:
         self.frame.geometry(f"+{x_cord}+{y_cord}")
         self.frame.update()
 
-    def show_at_cursor(self):
+    def show(x_cord, y_cord):
+        windowToFront(self.frame)
+        self.frame.deiconify()
+        self.frame.geometry(f"+{x_cord}+{y_cord}")
+        self.frame.update()
+
+    def hide(self, refocus=True):
+        self.root.withdraw()
+        self.root.update()
+        if refocus:
+            windowRefocus("path of exile")
+
+    def create_at_cursor(self):
+        if not self.closed:
+            return
         self.closed = False
         self.prepare_window()
         self.add_components()
+        self.show_at_cursor()
+
+    def show_at_cursor(self):
         windowToFront(self.frame)
         
         self.frame.update()
@@ -115,3 +153,6 @@ class GuiComponent:
         self.frame.geometry(f"+{m_x}+{m_y}")
         self.frame.update()
 
+def check_timeout_gui():
+    for x in components:
+        x.should_close()
