@@ -879,13 +879,14 @@ def price_item(text):
 
                     print(f"[*] Found {info['rarity']} item in clipboard: {info['name']} {extra_strings}")
                 
-                if USE_GUI:
-                    selectSearch.add_info(info)
-                    selectSearch.create_at_cursor()
-                    selectSearch.run()
-                    if selectSearch.searched:
-                        info = selectSearch.info
-                        selectSearch.searched = False
+                #TODO This needs to be its own hotkey, need to refractor this and related function
+                #if USE_GUI:
+                    #selectSearch.add_info(info)
+                    #selectSearch.create_at_cursor()
+                    #selectSearch.run()
+                    #if selectSearch.searched:
+                        #info = selectSearch.info
+                        #selectSearch.searched = False
 
                 json = build_json_official(
                     **{
