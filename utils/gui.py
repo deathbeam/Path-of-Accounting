@@ -53,31 +53,32 @@ def windowRefocus(name):
 
 class Gui:
     def __init__(self):
-        self.root = None
-    def prepare_window(self):
-
         tk = Tk()
         tk.wm_attributes("-topmost", 1)
         tk.update()
         tk.withdraw()
 
+        self.root = self.prepare_window()
+        self.last_task = None
+
+    def prepare_window(self):
         root = Toplevel()
         root.overrideredirect(True)
         root.option_add("*Font", "courier 12")
         root.withdraw()
-        self.root = root
-    def close(self):
-        for child in self.root.winfo_children():
-            child.destroy()
-        self.root.destroy()
-        self.root.update()
-        self.root.quit()
-        self.root = None
+
+        def check():
+            try:
+                time.sleep(0.5)
+                root.after(50, check)
+            except KeyboardInterrupt:
+                root.quit()
+
+        check()
+        return root
 
     def wait(self):
         self.root.mainloop()
-    
-    
 
     def mouse_pos(self):
         x = self.root.winfo_pointerx()
@@ -127,19 +128,50 @@ class Gui:
         self.root.deiconify()
         self.root.update()
 
-    def hide(self):
-        abs_coord_x, abs_coord_y = self.mouse_pos()
+    def hide(self, refocus=True):
         self.root.withdraw()
-        self.root.geometry(f"-{abs_coord_x}-{abs_coord_y}")
-        windowRefocus("path of exile")
+        self.root.update()
 
-    def show_price(self, price, price_vals, avg_times):
+        if refocus:
+            windowRefocus("path of exile")
+
+    def schedule_hide(self, delay=5000):
+        if self.last_task:
+            self.root.after_cancel(self.last_task)
+
+        self.last_task = self.root.after(delay, self.hide)
+
+    def show_not_enough_data(self):
+        """
+        Assemble a simple informative window which tells the user
+        that we were unable to confidently price the current clipboard
+        item.
+        """
+
+        self.reset()
+
+        # Setting up Master Frame, only currently used for background color due to grid format.
+        masterFrame = Frame(self.root, bg="#1f1f1f")
+        masterFrame.place(relwidth=1, relheight=1)
+
+        headerLabel = Label(self.root, text="Not Enough Data", bg="#0d0d0d", fg="#e6b800")
+        headerLabel.grid(column=0, row=1, padx=5)
+
+        displayText = "Could not find enough data to confidently price this item."
+        annotation = Label(self.root, text=displayText, bg="#0d0d0d", fg="#e6b800")
+        annotation.grid(column=0, row=2)
+
+        self.show()
+        time.sleep(5)
+        self.hide()
+
+    def show_price(self, price, price_vals, avg_times, not_enough=False):
         """
         Assemble the simple pricing window. Will overhaul this to get a better GUI in a future update.
         """
 
-        #self.reset()
-        self.prepare_window()
+        self.hide(False)
+        self.reset()
 
         # Setting up Master Frame, only currently used for background color due to grid format.
         masterFrame = Frame(self.root, bg="#1f1f1f")
@@ -205,7 +237,22 @@ class Gui:
         maxPriceLabel = Label(self.root, text="High: " + str(price[2]), bg="#0d0d0d", fg="#e6b800")
         maxPriceLabel.grid(column=2, row=rows_used + 3, padx=10)
 
-        # Show the new GUI, then get rid of it after 5 seconds. Might lower delay in the future.
+        extrabgLabel = None
+        extrabgLabel2 = None
+        notEnoughLabel = None
+        manualSearchLabel = None
+
+        if not_enough:
+            extrabgLabel = Label(self.root, bg="#0d0d0d")
+            extrabgLabel.grid(column=0, row=rows_used + 4, columnspan=3, sticky="w" + "e")
+            notEnoughText = "Found limited search results"
+            notEnoughLabel = Label(self.root, text=notEnoughText, bg="#0d0d0d", fg="#e6b800")
+            notEnoughLabel.grid(column=0, row=rows_used + 4, columnspan=3)
+            extrabgLabel2 = Label(self.root, bg="#0d0d0d")
+            extrabgLabel2.grid(column=0, row=rows_used + 5, columnspan=3, sticky="w" + "e")
+            manualSearchText = "Use alt+t to search manually"
+            manualSearchLabel = Label(self.root, text=manualSearchText, bg="#0d0d0d", fg="#e6b800")
+            manualSearchLabel.grid(column=0, row=rows_used + 5, columnspan=3)
+
         self.show()
-        time.sleep(5)
-        self.close()
+        self.schedule_hide()

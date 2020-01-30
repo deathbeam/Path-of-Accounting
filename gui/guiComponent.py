@@ -59,6 +59,7 @@ class GuiComponent:
         self.opened = time.time()
         self.elapsed = 0
         self.have_timeout = False
+        self.hidden = True
         components.append(self)
     def should_close(self):
         if self.is_closed():
@@ -69,6 +70,13 @@ class GuiComponent:
         if self.elapsed >= int(TIMEOUT_GUI):
             elapsed = 0
             self.close()
+    def should_hide(self):
+        if not self.have_timeout:
+            return
+        self.elapsed = time.time() - self.opened
+        if self.elapsed >= int(TIMEOUT_GUI):
+            elapsed = 0
+            self.hide()
     
     def prepare_window(self):
         tk = Tk().withdraw()
@@ -77,7 +85,7 @@ class GuiComponent:
         frame.option_add("*Font", "courier 12")
         frame.withdraw()
         self.frame = frame
-
+        self.hidden = True
     def is_closed(self):
         if self.closed:
             return True
@@ -90,7 +98,9 @@ class GuiComponent:
         self.frame.destroy()
         self.frame.update()
         self.frame = None
-        windowRefocus("path of exile")
+    def reset(self):
+        for child in self.frame.winfo_children():
+            child.destroy()
     def add_components(self):
         pass
     def create(self,x_cord, y_cord):
@@ -103,16 +113,22 @@ class GuiComponent:
         self.frame.deiconify()
         self.frame.geometry(f"+{x_cord}+{y_cord}")
         self.frame.update()
+        self.opened = time.time()
 
     def show(x_cord, y_cord):
+        self.hidden = False
         windowToFront(self.frame)
         self.frame.deiconify()
         self.frame.geometry(f"+{x_cord}+{y_cord}")
         self.frame.update()
+        self.opened = time.time()
 
     def hide(self, refocus=True):
-        self.root.withdraw()
-        self.root.update()
+        if self.hidden:
+            return
+        self.hidden = True
+        self.frame.withdraw()
+        self.frame.update()
         if refocus:
             windowRefocus("path of exile")
 
@@ -125,8 +141,8 @@ class GuiComponent:
         self.show_at_cursor()
 
     def show_at_cursor(self):
+        self.hidden = False
         windowToFront(self.frame)
-        
         self.frame.update()
         m_x = self.frame.winfo_pointerx()
         m_y = self.frame.winfo_pointery()
@@ -152,7 +168,12 @@ class GuiComponent:
         self.frame.deiconify()
         self.frame.geometry(f"+{m_x}+{m_y}")
         self.frame.update()
+        self.opened = time.time()
 
 def check_timeout_gui():
     for x in components:
-        x.should_close()
+        x.should_hide()
+
+def destroy_gui():
+    for x in components:
+        x.close()

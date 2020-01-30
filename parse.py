@@ -38,7 +38,7 @@ from utils.trade import (
 )
 from utils.web import open_trade_site, wiki_lookup
 from gui.UI import priceInfo, noResult
-from gui.guiComponent import check_timeout_gui
+from gui.guiComponent import check_timeout_gui, destroy_gui
 
 DEBUG = False
 
@@ -1183,7 +1183,10 @@ if __name__ == "__main__":
                 hotkey_handler_mainthread()
                 check_timeout_gui()
         except KeyboardInterrupt:
-                print(f"[!] Exiting, user requested termination.")
+            pass
 
+        print(f"[!] Exiting, user requested termination.")
+
+        destroy_gui()
         # Apparently things go bad if we don't call this, so here it is!
         deinit()  # Colorama
