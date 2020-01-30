@@ -1058,14 +1058,22 @@ def watch_keyboard(keyboard, use_hotkeys):
     keyboard.clipboard_callback = lambda _: hotkey_handler(keyboard, "clipboard")
     keyboard.start()
 
+from queue import Queue
+queue = Queue()
 
 def hotkey_handler(keyboard, hotkey):
     # Without this block, the clipboard's contents seem to always be from 1 before the current
     if hotkey != "clipboard":
         keyboard.press_and_release("ctrl+c")
         time.sleep(0.1)
+    queue.put(hotkey)
+
+
+def hotkey_handler_mainthread():
+    if queue.empty():
+        return
+    hotkey = queue.get()
     text = get_clipboard()
-    #print(text)
     if hotkey == "alt+t":
         info = parse_item_info(text)
         j = build_json_official(
@@ -1170,7 +1178,7 @@ if __name__ == "__main__":
         watch_keyboard(keyboard, USE_HOTKEYS)
         try:
             while True:
-                #keyboard.run()
+                hotkey_handler_mainthread()
                 priceInfo.should_close()
         except KeyboardInterrupt:
                 print(f"[!] Exiting, user requested termination.")
