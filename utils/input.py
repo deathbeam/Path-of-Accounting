@@ -2,14 +2,16 @@ import time
 from queue import Queue
 from threading import Thread
 from tkinter import TclError
+
 import pyperclip
 
 is_keyboard_module_available = False
 try:
     # This will raise error in case user is not running as root
     import keyboard
-    keyboard.add_hotkey('x', lambda: print())
-    keyboard.remove_hotkey('x')
+
+    keyboard.add_hotkey("x", lambda: print())
+    keyboard.remove_hotkey("x")
     is_keyboard_module_available = True
 except Exception:
     is_keyboard_module_available = False
@@ -19,6 +21,7 @@ if not is_keyboard_module_available:
     try:
         # This will raise error if there is no display environment
         from pynput.keyboard import GlobalHotKeys, Controller, Key
+
         is_pyinput_module_available = True
     except Exception:
         is_pyinput_module_available = False
@@ -27,10 +30,12 @@ if not is_keyboard_module_available:
 def get_clipboard():
     return pyperclip.paste()
 
+
 class HotkeyWatcher(Thread):
     """
     Watches for changes in hotkey queue and calls callbacks
     """
+
     def __init__(self, combination_to_function):
         super(HotkeyWatcher, self).__init__()
         self.daemon = True
@@ -63,7 +68,7 @@ class HotkeyWatcher(Thread):
 
 
 class Keyboard:
-    CLIPBOARD_HOTKEY = '<ctrl>+c'
+    CLIPBOARD_HOTKEY = "<ctrl>+c"
 
     def __init__(self):
         self.combination_to_function = {}
@@ -90,7 +95,7 @@ class Keyboard:
 
         if is_keyboard_module_available:
             for h in combination_to_queue:
-                keyboard.add_hotkey(h.replace('<', '').replace('>', ''), combination_to_queue[h])
+                keyboard.add_hotkey(h.replace("<", "").replace(">", ""), combination_to_queue[h])
         elif is_pyinput_module_available:
             self.listener = GlobalHotKeys(combination_to_queue)
             self.listener.daemon = True
@@ -109,6 +114,7 @@ class Keyboard:
         if is_keyboard_module_available:
             keyboard.press_and_release(key)
         elif is_pyinput_module_available:
+
             def safe_press(controller, k, press=True):
                 try:
                     # Lazy way to try and convert special key to enum
@@ -121,7 +127,7 @@ class Keyboard:
                 else:
                     controller.release(k)
 
-            keys = key.split('+')
+            keys = key.split("+")
 
             if len(keys) == 2:
                 # Press first key, then second key, then release second key and finally release first key

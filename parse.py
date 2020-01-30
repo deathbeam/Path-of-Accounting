@@ -975,6 +975,7 @@ def price_item(text):
                             round(float(price[-1]), 2),
                         ]
                         priceInfo.add_price_info(price, list(prices), avg_times, len(trade_info) < MIN_RESULTS)
+
                 else:
                     price = trade_info[0]["listing"]["price"]
                     if price != None:
@@ -992,11 +993,13 @@ def price_item(text):
                         print("[!] Not enough data to confidently price this item.")
                         if USE_GUI:
                             priceInfo.add_price_info(price, price_vals, time, True)
+
                     else:
                         print(f"[$] Price: {Fore.YELLOW}None \n\n")
                         print("[!] Not enough data to confidently price this item.")
                         if USE_GUI:
                             noResult.create_at_cursor()
+
             elif trade_info is not None:
                 print("[!] No results!")
                 print("[!] Not enough data to confidently price this item.")
@@ -1128,7 +1131,6 @@ def hotkey_handler_mainthread():
 
         print(f"[*] Searching for base {base}. Item Level: {ilvl}, Influence: {influence}")
         result = None
-
         try:
             result = next(
                 item
@@ -1183,7 +1185,9 @@ if __name__ == "__main__":
                 hotkey_handler_mainthread()
                 check_timeout_gui()
         except KeyboardInterrupt:
-                print(f"[!] Exiting, user requested termination.")
+            pass
+
+        print(f"[!] Exiting, user requested termination.")
 
         # Apparently things go bad if we don't call this, so here it is!
         deinit()  # Colorama
