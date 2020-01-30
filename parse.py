@@ -39,6 +39,7 @@ from utils.trade import (
 from utils.web import open_trade_site, wiki_lookup
 from gui.UI import priceInfo, noResult, selectSearch
 from gui.guiComponent import check_timeout_gui, destroy_gui
+import webbrowser
 
 DEBUG = False
 
@@ -875,14 +876,14 @@ def price_item(text):
                     print(f"[*] Found {info['rarity']} item in clipboard: {info['name']} {extra_strings}")
                 
                 #TODO This needs to be its own hotkey, need to refractor this and related function
-                #if USE_GUI:
-                    #selectSearch.add_info(info)
-                    #selectSearch.create_at_cursor()
-                    #selectSearch.run()
-                    #if selectSearch.searched:
-                        #info = selectSearch.info
-                        #selectSearch.searched = False
-
+                if USE_GUI:
+                    selectSearch.add_info(info)
+                    selectSearch.create_at_cursor()
+                    selectSearch.run()
+                    if selectSearch.searched:
+                        info = selectSearch.info
+                        selectSearch.searched = False
+                #print(info)
                 json = build_json_official(
                     **{
                         k: v
@@ -903,6 +904,12 @@ def price_item(text):
                         )
                     },
                 )
+                if USE_GUI:
+                    if selectSearch.open_trade:
+                        j = query_item(json, LEAGUE)
+                        selectSearch.openTrade = False
+                        url = f"https://www.pathofexile.com/trade/search/{LEAGUE}/" + j["id"]
+                        webbrowser.open(url)
             if json != None:
                 trade_info = search_item(json, LEAGUE)
 
@@ -1003,7 +1010,7 @@ def price_item(text):
                         if USE_GUI:
                             priceInfo.add_price_info(price, price_vals, time, True)
                             priceInfo.create_at_cursor()
-                            
+
                     else:
                         print(f"[$] Price: {Fore.YELLOW}None \n\n")
                         print("[!] Not enough data to confidently price this item.")
