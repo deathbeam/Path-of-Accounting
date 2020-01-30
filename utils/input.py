@@ -27,7 +27,7 @@ if not is_keyboard_module_available:
 def get_clipboard():
     return pyperclip.paste()
 
-class HotkeyWatcher():
+class HotkeyWatcher(Thread):
     """
     Watches for changes in hotkey queue and calls callbacks
     """
@@ -46,17 +46,17 @@ class HotkeyWatcher():
             self.queue.put(hotkey)
 
     def run(self):
-        #while not self.stopping:
-        try:
-            hotkey = self.queue.get(False)
-            self.combination_to_function[hotkey]()
-        except KeyboardInterrupt:
-            return
-        except Exception as e:
-            # Timeout
-            return
+        while not self.stopping:
+            try:
+                hotkey = self.queue.get()
+                self.combination_to_function[hotkey]()
+            except KeyboardInterrupt:
+                break
+            except Exception as e:
+                # Do not fail
+                print("Unexpected exception occurred while handling hotkey: " + str(e))
 
-        self.queue.task_done()
+            self.queue.task_done()
 
     def stop(self):
         self.stopping = True
@@ -96,10 +96,8 @@ class Keyboard:
             self.listener.daemon = True
             self.listener.start()
 
-        
-    def run(self):
         if is_keyboard_module_available or is_pyinput_module_available:
-            self.hotkey_watcher.run()
+            self.hotkey_watcher.start()
 
     def write(self, string):
         if is_keyboard_module_available:

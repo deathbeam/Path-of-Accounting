@@ -37,7 +37,6 @@ class PriceInfo(GuiComponent):
             column=2, row=1, padx=5
         )
         headerLabel3 = Label(self.frame, text="   ", bg="#0d0d0d", fg="#e6b800").grid(column=1, row=1, sticky="w" + "e")
-
         rows_used = len(self.price_vals)
 
         for row in range(rows_used):
@@ -86,7 +85,6 @@ class PriceInfo(GuiComponent):
 
             maxPriceLabel = Label(self.frame, text="High: " + str(self.price[2]), bg="#0d0d0d", fg="#e6b800")
             maxPriceLabel.grid(column=2, row=rows_used + 3, padx=10)
-
 """
 gui = PriceInfo()
 gui.show(0,10)

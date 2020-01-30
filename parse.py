@@ -1170,7 +1170,7 @@ if __name__ == "__main__":
         watch_keyboard(keyboard, USE_HOTKEYS)
         try:
             while True:
-                keyboard.run()
+                #keyboard.run()
                 priceInfo.should_close()
         except KeyboardInterrupt:
                 print(f"[!] Exiting, user requested termination.")

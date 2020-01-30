@@ -70,7 +70,6 @@ class GuiComponent:
         self.closed = True
         self.frame.destroy()
         self.frame.update()
-        self.frame.quit()
         self.frame = None
     def add_components(self):
         pass
@@ -78,7 +77,6 @@ class GuiComponent:
         self.closed = False
         self.prepare_window()
         self.add_components()
-        self.frame.update()
         windowToFront(self.frame)
         self.frame.deiconify()
         self.frame.geometry(f"+{x_cord}+{y_cord}")
@@ -88,10 +86,8 @@ class GuiComponent:
         self.closed = False
         self.prepare_window()
         self.add_components()
-        self.frame.update()
-        if self.frame == None:
-            print("ERROR")
         windowToFront(self.frame)
+        
 
         m_x = self.frame.winfo_pointerx()
         m_y = self.frame.winfo_pointery()
