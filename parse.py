@@ -1095,7 +1095,6 @@ queue = Queue()
 def hotkey_handler(keyboard, hotkey):
     # Without this block, the clipboard's contents seem to always be from 1 before the current
     if hotkey != "clipboard":
-        fake_copy = True
         keyboard.press_and_release("ctrl+c")
         time.sleep(0.1)
     queue.put(hotkey)
