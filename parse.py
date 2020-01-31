@@ -11,7 +11,8 @@ from colorama import Fore, deinit, init
 # Local imports
 from enums.item_modifier_type import ItemModifierType
 from models.item_modifier import ItemModifier
-from utils.config import LEAGUE, MIN_RESULTS, PROJECT_URL, USE_GUI, USE_HOTKEYS
+from utils import config
+from utils.config import LEAGUE, MIN_RESULTS, PROJECT_URL, USE_HOTKEYS
 from utils.currency import (
     CATALYSTS,
     CURRENCY,
@@ -25,7 +26,7 @@ from utils.currency import (
     SCARABS,
     VIALS,
 )
-from utils.exceptions import InvalidAPIResponseException
+from utils.exceptions import InvalidAPIResponseException, NotFoundException
 from utils.input import Keyboard, get_clipboard
 from utils.trade import (
     exchange_currency,
@@ -489,7 +490,7 @@ def search_item(j, league):
         # If we have legitimately run out of stats...
         # Then this item can not be found.
         # TODO: Figure out why it can't find anything...
-        raise InvalidAPIResponseException
+        raise NotFoundException
 
     else:  # Any time we ignore stats.
         res = query_item(j, league)
@@ -942,7 +943,7 @@ def price_item(text):
 
                     # Print the pretty string, ignoring trailing comma
                     print(f"[$] Price: {print_string[:-2]}\n\n")
-                    if USE_GUI:
+                    if config.USE_GUI:
                         priceList = prices
                         # Get difference between current time and posted time in timedelta format
                         times = [
@@ -1008,6 +1009,7 @@ def price_item(text):
                         price_vals = [[str(price_val) + price_curr]]
 
                         print("[!] Not enough data to confidently price this item.")
+                          
                         if USE_GUI:
                             priceInfo.add_price_info(price, price_vals, time, True)
                             priceInfo.create_at_cursor()
@@ -1023,6 +1025,12 @@ def price_item(text):
                 print("[!] Not enough data to confidently price this item.")
                 if USE_GUI:
                     noResult.create_at_cursor()
+
+
+    except NotFoundException as e:
+        print("[!] No results!")
+        if USE_GUI:
+            noResult.create_at_cursor()
 
     except InvalidAPIResponseException as e:
         print(f"{Fore.RED}================== LOOKUP FAILED, PLEASE READ INSTRUCTIONS BELOW ==================")
