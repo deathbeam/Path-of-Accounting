@@ -876,14 +876,14 @@ def price_item(text):
 
                     print(f"[*] Found {info['rarity']} item in clipboard: {info['name']} {extra_strings}")
                 
-                #TODO This needs to be its own hotkey, need to refractor this and related function
-                if config.USE_GUI:
-                    selectSearch.add_info(info)
-                    selectSearch.create_at_cursor()
-                    selectSearch.run()
-                    if selectSearch.searched:
-                        info = selectSearch.info
-                        selectSearch.searched = False
+                #TODO This needs to be its own hotkey, I will change this when Df010 is done with his item class
+                #if config.USE_GUI:
+                    #selectSearch.add_info(info)
+                    #selectSearch.create_at_cursor()
+                    #selectSearch.run()
+                    #if selectSearch.searched:
+                        #info = selectSearch.info
+                        #selectSearch.searched = False
 
                 json = build_json_official(
                     **{
@@ -1091,9 +1091,11 @@ def watch_keyboard(keyboard, use_hotkeys):
 from queue import Queue
 queue = Queue()
 
+
 def hotkey_handler(keyboard, hotkey):
     # Without this block, the clipboard's contents seem to always be from 1 before the current
     if hotkey != "clipboard":
+        fake_copy = True
         keyboard.press_and_release("ctrl+c")
         time.sleep(0.1)
     queue.put(hotkey)
