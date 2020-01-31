@@ -11,7 +11,8 @@ from colorama import Fore, deinit, init
 # Local imports
 from enums.item_modifier_type import ItemModifierType
 from models.item_modifier import ItemModifier
-from utils.config import LEAGUE, MIN_RESULTS, PROJECT_URL, USE_GUI, USE_HOTKEYS
+from utils import config
+from utils.config import LEAGUE, MIN_RESULTS, PROJECT_URL, USE_HOTKEYS
 from utils.currency import (
     CATALYSTS,
     CURRENCY,
@@ -876,7 +877,7 @@ def price_item(text):
                     print(f"[*] Found {info['rarity']} item in clipboard: {info['name']} {extra_strings}")
                 
                 #TODO This needs to be its own hotkey, need to refractor this and related function
-                if USE_GUI:
+                if config.USE_GUI:
                     selectSearch.add_info(info)
                     selectSearch.create_at_cursor()
                     selectSearch.run()
@@ -904,7 +905,7 @@ def price_item(text):
                         )
                     },
                 )
-                if USE_GUI:
+                if config.USE_GUI:
                     if selectSearch.openTrade:
                         j = query_item(json, LEAGUE)
                         selectSearch.openTrade = False
@@ -942,7 +943,7 @@ def price_item(text):
 
                     # Print the pretty string, ignoring trailing comma
                     print(f"[$] Price: {print_string[:-2]}\n\n")
-                    if USE_GUI:
+                    if config.USE_GUI:
                         priceList = prices
                         # Get difference between current time and posted time in timedelta format
                         times = [
@@ -1008,20 +1009,20 @@ def price_item(text):
                         price_vals = [[str(price_val) + price_curr]]
 
                         print("[!] Not enough data to confidently price this item.")
-                        if USE_GUI:
+                        if config.USE_GUI:
                             priceInfo.add_price_info(price, price_vals, time, True)
                             priceInfo.create_at_cursor()
 
                     else:
                         print(f"[$] Price: {Fore.YELLOW}None \n\n")
                         print("[!] Not enough data to confidently price this item.")
-                        if USE_GUI:
+                        if config.USE_GUI:
                             noResult.create_at_cursor()
 
             elif trade_info is not None:
                 print("[!] No results!")
                 print("[!] Not enough data to confidently price this item.")
-                if USE_GUI:
+                if config.USE_GUI:
                     noResult.create_at_cursor()
 
     except InvalidAPIResponseException as e:
@@ -1198,12 +1199,12 @@ if __name__ == "__main__":
         print(f"All values will be from the {Fore.MAGENTA}{LEAGUE} league")
         keyboard = Keyboard()
         watch_keyboard(keyboard, USE_HOTKEYS)
-        if USE_GUI:
+        if config.USE_GUI:
             init_ui()
         try:
             while True:
                 hotkey_handler_mainthread()
-                if USE_GUI:
+                if config.USE_GUI:
                     check_timeout_gui()
         except KeyboardInterrupt:
             pass
