@@ -875,7 +875,7 @@ def price_item(text):
                         extra_strings += f"Quality: {info['quality']}+"
 
                     print(f"[*] Found {info['rarity']} item in clipboard: {info['name']} {extra_strings}")
-                
+
                 #TODO This needs to be its own hotkey, I will change this when Df010 is done with his item class
                 #if config.USE_GUI:
                     #selectSearch.add_info(info)
@@ -1085,26 +1085,19 @@ def watch_keyboard(keyboard, use_hotkeys):
 
     # Fetch the item's approximate price
     print("[*] Watching clipboard (Ctrl+C to stop)...")
-    keyboard.clipboard_callback = lambda _: hotkey_handler(keyboard, "clipboard")
+    keyboard.add_hotkey("clipboard", lambda: hotkey_handler(keyboard, "clipboard"))
     keyboard.start()
 
-from queue import Queue
-queue = Queue()
-
-
 def hotkey_handler(keyboard, hotkey):
+    print("Got hotkey " + hotkey)
+
     # Without this block, the clipboard's contents seem to always be from 1 before the current
     if hotkey != "clipboard":
         keyboard.press_and_release("ctrl+c")
         time.sleep(0.1)
-    queue.put(hotkey)
 
-
-def hotkey_handler_mainthread():
-    if queue.empty():
-        return
-    hotkey = queue.get()
     text = get_clipboard()
+
     if hotkey == "alt+t":
         info = parse_item_info(text)
         j = build_json_official(
@@ -1206,11 +1199,13 @@ if __name__ == "__main__":
         print(f"All values will be from the {Fore.MAGENTA}{LEAGUE} league")
         keyboard = Keyboard()
         watch_keyboard(keyboard, USE_HOTKEYS)
+
         if config.USE_GUI:
             init_ui()
         try:
             while True:
-                hotkey_handler_mainthread()
+                keyboard.poll()
+
                 if config.USE_GUI:
                     check_timeout_gui()
         except KeyboardInterrupt:
