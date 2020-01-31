@@ -1028,7 +1028,7 @@ def price_item(text):
 
     except NotFoundException as e:
         print("[!] No results!")
-        if USE_GUI:
+        if config.USE_GUI:
             noResult.create_at_cursor()
 
     except InvalidAPIResponseException as e:
